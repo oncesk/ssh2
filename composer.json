@@ -1,0 +1,15 @@
+{
+	"name": "oncesk/ssh2",
+	"type": "library",
+	"description": "ssh2 client library",
+	"homepage": "https://github.com/oncesk/ssh2",
+	"keywords": ["ssh","ssh2", "ssh client"],
+	"require": {
+		"php": ">=5.4.0"
+	},
+	"autoload": {
+		"psr-0": {
+			"Ssh": "src"
+		}
+	}
+}
