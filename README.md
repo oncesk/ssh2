@@ -58,7 +58,7 @@ try {
 use Ssh\Client;
 use Ssh\Auth\PublicKey;
 use Ssh\Command\Result;
-use \Ssh\Command\Chain;
+use Ssh\Command\Chain;
 
 $auth = new PublicKey('username', 'path to public key', 'path to private key', 'passphrase if set');
 $client = new Client('host_name_or_ip');
