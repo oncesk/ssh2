@@ -104,3 +104,11 @@ try {
 }
 
 ```
+
+- Shell
+
+ With shell you can working like in terminal
+ 
+```php
+
+```
