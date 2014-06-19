@@ -1,7 +1,7 @@
 ssh2
 ====
 
-Library which provide you ability execute remote commands as in terminal
+Library which provide you ability execute remote commands like in terminal
 
 With this library you can execute any commands using ssh2 protocol.
 
