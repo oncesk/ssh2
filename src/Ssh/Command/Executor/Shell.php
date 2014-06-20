@@ -4,6 +4,7 @@ namespace Ssh\Command\Executor;
 use Ssh\Command\ResultInterface;
 use Ssh\Command\CommandInterface;
 use Ssh\ConnectionInterface;
+use Ssh\ReadTick;
 use Ssh\TerminalInterface;
 
 /**
@@ -31,7 +32,18 @@ class Shell extends Base {
 			$commandLineLabel = $connection->getCommandLineLabel();
 		}
 
-		$content = self::read($connection->getConnection(), 8192, $commandLineLabel, $readTickCallback);
+		$self = $this;
+		$content = self::read($connection->getConnection(), 8192, $commandLineLabel, function ($tickRead, $read, $readArray, $label) use ($self, $command, $readTickCallback) {
+			if ($readTickCallback) {
+				$tick = new ReadTick();
+				$tick->read = $read;
+				$tick->tickRead = $tickRead;
+				$tick->readLines = $readArray;
+				$tick->command = $command;
+				$tick->executor = $self;
+				return call_user_func($readTickCallback, $tick);
+			}
+		});
 
 		$result = $this->createResult($content, 0, $command);
 		$command->execEnd();
