@@ -121,14 +121,15 @@ class Shell implements ConnectionInterface, ErrorStreamInterface, TerminalInterf
 
 	/**
 	 * @param $command
+	 * @param \Closure|callable $readTickCallback
 	 *
 	 * @return Command\ResultInterface
 	 */
-	public function exec($command) {
+	public function exec($command, $readTickCallback = null) {
 		if (is_string($command)) {
 			$command = new ShellCommand($command);
 		}
-		return $this->getExecutor()->exec($this, $command);
+		return $this->getExecutor()->exec($this, $command, $readTickCallback);
 	}
 
 	/**

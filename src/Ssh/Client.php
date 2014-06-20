@@ -200,11 +200,12 @@ class Client implements ConnectionInterface, ExecInterface, ChainInterface {
 
 	/**
 	 * @param $command
+	 * @param \Closure|callable $readTickCallback
 	 *
 	 * @return ResultInterface
 	 * @throws \RuntimeException
 	 */
-	public function exec($command) {
+	public function exec($command, $readTickCallback = null) {
 		if (!$this->isAuthenticated()) {
 			throw new \RuntimeException('Client is not authorized');
 		}
@@ -214,7 +215,7 @@ class Client implements ConnectionInterface, ExecInterface, ChainInterface {
 		if (!($command instanceof CommandInterface)) {
 			throw new \RuntimeException('Can not execute command because command type is not supported, ' . gettype($command));
 		}
-		return $this->getCommandExecutor()->exec($this, $command);
+		return $this->getCommandExecutor()->exec($this, $command, $readTickCallback);
 	}
 
 	/**
