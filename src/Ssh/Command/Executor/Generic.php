@@ -27,12 +27,14 @@ class Generic implements ExecutorInterface {
 	/**
 	 * @param ConnectionInterface $connection
 	 * @param CommandInterface    $command
+	 * @param \Closure|callable   $readTickCallback
 	 *
 	 * @return ResultInterface
 	 */
-	public function exec(ConnectionInterface $connection, CommandInterface $command) {
-		return $this->getExecutor($command)->exec($connection, $command);
+	public function exec(ConnectionInterface $connection, CommandInterface $command, $readTickCallback = null) {
+		return $this->getExecutor($command)->exec($connection, $command, $readTickCallback);
 	}
+
 
 	/**
 	 * @param CommandInterface $command

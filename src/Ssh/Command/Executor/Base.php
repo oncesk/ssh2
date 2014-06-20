@@ -4,6 +4,7 @@ namespace Ssh\Command\Executor;
 use Ssh\Command\Executor;
 use Ssh\Command\Result;
 use Ssh\Command\CommandInterface;
+use Ssh\Command\ResultInterface;
 
 /**
  * Class Base

@@ -15,11 +15,12 @@ class Exec extends Base {
 	/**
 	 * @param ConnectionInterface $connection
 	 * @param CommandInterface    $command
+	 * @param \Closure|callable $readTickCallback
 	 *
 	 * @return ResultInterface
 	 * @throws \RuntimeException
 	 */
-	public function exec(ConnectionInterface $connection, CommandInterface $command) {
+	public function exec(ConnectionInterface $connection, CommandInterface $command, $readTickCallback = null) {
 		$command->execBegin();
 		$stream = @ssh2_exec(
 			$connection->getConnection(),
