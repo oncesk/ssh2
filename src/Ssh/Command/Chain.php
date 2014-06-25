@@ -30,12 +30,13 @@ class Chain implements ChainInterface {
 	/**
 	 * @param string|CommandInterface $command
 	 * @param null           $callback
+	 * @param null           $readTickCallback
 	 *
 	 * @return $this
 	 */
-	public function exec($command, $callback = null) {
+	public function exec($command, $callback = null, $readTickCallback = null) {
 		if (!$this->isStopped) {
-			$result = $this->executable->exec($command);
+			$result = $this->executable->exec($command, $readTickCallback);
 			if ($callback) {
 				call_user_func($callback, $result, $this, $this->executable);
 			}

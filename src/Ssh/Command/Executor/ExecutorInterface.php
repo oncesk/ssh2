@@ -14,8 +14,9 @@ interface ExecutorInterface {
 	/**
 	 * @param ConnectionInterface $connection
 	 * @param CommandInterface    $command
+	 * @param \Closure|callable   $readTickCallback
 	 *
 	 * @return ResultInterface
 	 */
-	public function exec(ConnectionInterface $connection, CommandInterface $command);
+	public function exec(ConnectionInterface $connection, CommandInterface $command, $readTickCallback = null);
 }

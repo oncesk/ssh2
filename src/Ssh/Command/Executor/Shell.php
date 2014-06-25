@@ -4,6 +4,7 @@ namespace Ssh\Command\Executor;
 use Ssh\Command\ResultInterface;
 use Ssh\Command\CommandInterface;
 use Ssh\ConnectionInterface;
+use Ssh\ReadTick;
 use Ssh\TerminalInterface;
 
 /**
@@ -15,10 +16,11 @@ class Shell extends Base {
 	/**
 	 * @param ConnectionInterface $connection
 	 * @param CommandInterface    $command
+	 * @param \Closure|callable   $readTickCallback
 	 *
-	 * @return ResultInterface
+	 * @return \Ssh\Command\Result|ResultInterface
 	 */
-	public function exec(ConnectionInterface $connection, CommandInterface $command) {
+	public function exec(ConnectionInterface $connection, CommandInterface $command, $readTickCallback = null) {
 		$command->execBegin();
 		fwrite($connection->getConnection(), $command->asString() . PHP_EOL);
 		usleep(500000);
@@ -30,14 +32,25 @@ class Shell extends Base {
 			$commandLineLabel = $connection->getCommandLineLabel();
 		}
 
-		$content = self::read($connection->getConnection(), 8192, $commandLineLabel);
+		$self = $this;
+		$content = self::read($connection->getConnection(), 8192, $commandLineLabel, function ($tickRead, $read, $readArray, $label) use ($connection, $command, $readTickCallback) {
+			if ($readTickCallback) {
+				$tick = new ReadTick();
+				$tick->read = $read;
+				$tick->tickRead = $tickRead;
+				$tick->readLines = $readArray;
+				$tick->command = $command;
+				$tick->connection = $connection->getConnection();
+				return call_user_func($readTickCallback, $tick);
+			}
+		});
 
 		$result = $this->createResult($content, 0, $command);
 		$command->execEnd();
 		return $result;
 	}
 
-	public static function read($stream, $bufferLength = 8192, $commandLineLabel = null) {
+	public static function read($stream, $bufferLength = 8192, $commandLineLabel = null, $readTickCallback = null) {
 		$content = '';
 
 		read:
@@ -48,6 +61,14 @@ class Shell extends Base {
 		}
 		$content .= $read;
 		$lines = preg_split('/\r?\n/', $content);
+
+		if ($readTickCallback) {
+			if (call_user_func($readTickCallback, $read, $content, $lines, $commandLineLabel) === false) {
+				array_shift($lines);
+				return implode("\n", $lines);
+			}
+		}
+
 		$terminalLabel = trim($lines[count($lines) - 1]);
 		if ($commandLineLabel) {
 			if (!preg_match(sprintf('/%s/', addcslashes($commandLineLabel, '$[]~-')), $terminalLabel)) {
