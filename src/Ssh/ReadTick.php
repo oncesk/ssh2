@@ -35,7 +35,9 @@ class ReadTick {
 	public $command;
 
 	/**
-	 * @var ExecutorInterface
+	 * IO
+	 *
+	 * @var resource
 	 */
-	public $executor;
+	public $connection;
 }

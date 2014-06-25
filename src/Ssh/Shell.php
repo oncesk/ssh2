@@ -88,21 +88,33 @@ class Shell implements ConnectionInterface, ErrorStreamInterface, TerminalInterf
 
 		usleep(500000);
 
-		$read = fread($this->stream, 8192);
+		$read = fread($this->stream, 8092);
+
 		$lines = preg_split('/\r?\n/', $read);
 		$end = $lines[count($lines) - 1];
-		if (!preg_match(sprintf("/%s@/", $client->getUser()), $end)) {
+		if (!preg_match(sprintf("/%s/", $client->getUser()), $end)) {
 			throw new \RuntimeException('Can not find terminal command line label');
 		}
+
+		$this->commandLineLabel = $client->getUser();
 
 		$this->hostName = $this->exec('hostname');
 
-		if (!preg_match(sprintf('/%s@%s/', $client->getUser(), $this->hostName), $end)) {
-			throw new \RuntimeException('Can not find terminal command line label');
+		if (preg_match(sprintf('/%s/', $this->hostName), $end)) {
+			$this->commandLineLabel = $this->hostName;
 		}
 
-		$this->commandLineLabel = $client->getUser() . '@' . $this->hostName;
 		$this->fetchErrorStream();
+	}
+
+	/**
+	 * @param string $label
+	 *
+	 * @return $this
+	 */
+	public function setCommandLineLabel($label) {
+		$this->commandLineLabel = $label;
+		return $this;
 	}
 
 	/**

@@ -33,14 +33,14 @@ class Shell extends Base {
 		}
 
 		$self = $this;
-		$content = self::read($connection->getConnection(), 8192, $commandLineLabel, function ($tickRead, $read, $readArray, $label) use ($self, $command, $readTickCallback) {
+		$content = self::read($connection->getConnection(), 8192, $commandLineLabel, function ($tickRead, $read, $readArray, $label) use ($connection, $command, $readTickCallback) {
 			if ($readTickCallback) {
 				$tick = new ReadTick();
 				$tick->read = $read;
 				$tick->tickRead = $tickRead;
 				$tick->readLines = $readArray;
 				$tick->command = $command;
-				$tick->executor = $self;
+				$tick->connection = $connection->getConnection();
 				return call_user_func($readTickCallback, $tick);
 			}
 		});
